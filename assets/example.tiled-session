@@ -8,6 +8,7 @@
     ],
     "fileStates": {
     },
+    "last.imagePath": "/home/patrick/Code/parcel_phaser_platformer/assets/tilesets",
     "map.height": 7,
     "map.lastUsedFormat": "tmx",
     "map.layerDataFormat": null,
@@ -18,5 +19,10 @@
     ],
     "project": "example.tiled-project",
     "recentFiles": [
-    ]
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 64,
+        "width": 64
+    }
 }
