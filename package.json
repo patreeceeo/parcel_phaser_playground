@@ -1,0 +1,19 @@
+{
+  "name": "parcel_playground",
+  "packageManager": "yarn@3.6.4",
+  "source": "src/index.html",
+  "scripts": {
+    "start": "parcel",
+    "build": "parcel build"
+  },
+  "devDependencies": {
+    "@parcel/core": "^2.9.3",
+    "parcel": "^2.9.3",
+    "process": "^0.11.10",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "phaser": "^3.60.0",
+    "serve-static": "^1.15.0"
+  }
+}
