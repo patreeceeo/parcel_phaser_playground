@@ -107,3 +107,8 @@ const game = new Phaser.Game({
   }
 });
 
+// function setGravity(vec: PhaserTypes.Math.Vector2Like) {
+//   for(const scene of game.scene.getScenes()) {
+//     // TODO put game objects in a global queryable data sctructure
+//   }
+// }
