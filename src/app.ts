@@ -8,6 +8,7 @@ if (module.hot) {
 
 class MyScene extends Phaser.Scene {
   #player: PhaserTypes.Physics.Arcade.SpriteWithDynamicBody | undefined;
+  #spikes: Phaser.Physics.Arcade.Group | undefined;
   #cursors: PhaserTypes.Input.Keyboard.CursorKeys | undefined;
   preload () {
     this.load.image('background', 'assets/images/background.png');
@@ -57,6 +58,39 @@ class MyScene extends Phaser.Scene {
     });
 
     this.#cursors = this.input.keyboard!.createCursorKeys();
+
+    // Create a sprite group for all spikes, set common properties to ensure that
+    // sprites in the group don't move via gravity or by player collisions
+    this.#spikes = this.physics.add.group({
+      allowGravity: false,
+      immovable: true
+    }) as any; // Phaser doesn't export the type we need here.
+
+    // Let's get the spike objects, these are NOT sprites
+    // We'll create spikes in our sprite group for each object in our map
+    map.getObjectLayer('Spikes')!.objects.forEach((spike) => {
+      // Add new spikes to our sprite group
+      const spikeSprite = this.#spikes!.create(spike.x, spike!.y! + 200 - spike!.height!, 'spike').setOrigin(0);
+      spikeSprite.body.setSize(spike.width, spike.height! - 20).setOffset(0, 20);
+    });
+
+    this.physics.add.collider(this.#player, this.#spikes!, 
+      () => {
+        this.#player!.setVelocity(0, 0);
+        this.#player!.setX(50);
+        this.#player!.setY(300);
+        this.#player!.play('idle', true);
+        this.#player!.setAlpha(0);
+        let tw = this.tweens.add({
+          targets: this.#player,
+          alpha: 1,
+          duration: 100,
+          ease: 'Linear',
+          repeat: 5,
+        });
+      }
+
+    , undefined, this);
   }
   update () {
     // Control the player with left or right keys
