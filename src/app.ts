@@ -50,6 +50,12 @@ class MyScene extends Phaser.Scene {
       repeat: -1
     });
 
+    this.anims.create({
+      key: 'jump',
+      frames: [{ key: 'player', frame: 'robo_player_1' }],
+      frameRate: 10,
+    });
+
     this.#cursors = this.input.keyboard!.createCursorKeys();
   }
   update () {
