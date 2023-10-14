@@ -86,6 +86,12 @@ class MyScene extends Phaser.Scene {
       this.#player!.setVelocityY(-350);
       this.#player!.play('jump', true);
     }
+    if (this.#player!.body.velocity.x > 0) {
+      this.#player!.setFlipX(false);
+    } else if (this.#player!.body.velocity.x < 0) {
+      // otherwise, make them face the other side
+      this.#player!.setFlipX(true);
+    }
   }
 }
 
