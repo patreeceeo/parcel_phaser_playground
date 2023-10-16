@@ -6,14 +6,7 @@ const GRAVITY_Y = 400;
 let _player: PhaserTypes.Physics.Arcade.SpriteWithDynamicBody;
 
 class MyScene extends Phaser.Scene {
-  #spikes: Phaser.Physics.Arcade.Group | undefined;
   #cursors: PhaserTypes.Input.Keyboard.CursorKeys | undefined;
-  preload() {
-    this.load.image(
-      "player",
-      "assets/images/kenney_player.png",
-    );
-  }
   create() {
     console.log("creating player!");
     const player = this.physics.add.sprite(50, 300, "player");
@@ -77,25 +70,20 @@ const game = new Phaser.Game({
   },
 });
 
-let _reloadCount = 0;
-
 interface HMRData {
   player: PhaserTypes.Physics.Arcade.SpriteWithDynamicBody;
-  reloadCount: number;
 }
 
 if (module.hot) {
   module.hot.dispose((data: HMRData) => {
-    console.log("dispose module (reload #" + _reloadCount + ")");
+    console.log("dispose module");
     data.player = _player;
-    data.reloadCount = _reloadCount;
     // NOTE: it's critical to destroy the old Phaser.Game instance for HMR to work correctly.
     game.destroy(true);
   });
   module.hot.accept(() => {
-    console.log("reload module (reload #" + _reloadCount + ")");
+    console.log("accept module");
     _player = module.hot!.data.player;
-    _reloadCount = module.hot!.data.reloadCount + 1;
   });
 }
 console.log("finished evaluating module scope");
