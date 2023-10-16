@@ -254,7 +254,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@parcel/core@npm:2.10.0, @parcel/core@npm:^2.9.3":
+"@parcel/core@npm:2.10.0":
   version: 2.10.0
   resolution: "@parcel/core@npm:2.10.0"
   dependencies:
@@ -2749,10 +2749,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "parcel_playground@workspace:."
   dependencies:
-    "@parcel/core": ^2.9.3
     parcel: ^2.9.3
     phaser: ^3.60.0
-    process: ^0.11.10
     serve-static: ^1.15.0
     typescript: ^5.2.2
   languageName: unknown
@@ -2881,13 +2879,6 @@ __metadata:
     posthtml-parser: ^0.11.0
     posthtml-render: ^3.0.0
   checksum: 8b9b9d27bd2417d6b5b7d408000b23316c3c4d2a2d0ea62080a8fbec5654cc7376ea9d6317b290c030d616142144a8ca0a96ffe1e919493e3eac17442d362596
-  languageName: node
-  linkType: hard
-
-"process@npm:^0.11.10":
-  version: 0.11.10
-  resolution: "process@npm:0.11.10"
-  checksum: bfcce49814f7d172a6e6a14d5fa3ac92cc3d0c3b9feb1279774708a719e19acd673995226351a082a9ae99978254e320ccda4240ddc474ba31a76c79491ca7c3
   languageName: node
   linkType: hard
 
