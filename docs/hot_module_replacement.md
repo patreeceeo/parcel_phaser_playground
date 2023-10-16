@@ -131,22 +131,22 @@ console.log("finished evaluating module scope");
 To use Parcel's HMR support, we must opt in to it using the `module.hot` API. Add the follow to the bottom of `game.ts`:
 
 ```typescript
-+interface HMRData {
-+  player: PhaserTypes.Physics.Arcade.SpriteWithDynamicBody;
-+}
-+
-+if (module.hot) {
-+  module.hot.dispose((data: HMRData) => {
-+    console.log("dispose module");
-+    data.player = _player;
-+    // NOTE: it's critical to destroy the old Phaser.Game instance for HMR to work correctly.
-+    game.destroy(true);
-+  });
-+  module.hot.accept(() => {
-+    console.log("reload module");
-+    _player = module.hot!.data.player;
-+  });
-+}
+interface HMRData {
+  player: PhaserTypes.Physics.Arcade.SpriteWithDynamicBody;
+}
+
+if (module.hot) {
+  module.hot.dispose((data: HMRData) => {
+    console.log("dispose module");
+    data.player = _player;
+    // NOTE: it's critical to destroy the old Phaser.Game instance for HMR to work correctly.
+    game.destroy(true);
+  });
+  module.hot.accept(() => {
+    console.log("reload module");
+    _player = module.hot!.data.player;
+  });
+}
  console.log("finished evaluating module scope");
  ```
 
@@ -176,7 +176,7 @@ So, in order for this to work, we also need to change some in the scene's `creat
    }
 ```
 
-If all goes well, we should now be able to move our player, change the `GRAVITY_Y` constant, and immediately see that our player is in the same position as before, but now experiences more or less gravity than before!
+If all goes well, we should now be able to move our player, change the `GRAVITY_Y` constant, and immediately see that our player is in the same position as before, but now experiences more or less gravity than before! Any other changes should also be immediately reflected without loosing the player's position.
 
 # Footnotes
 
