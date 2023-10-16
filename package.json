@@ -3,7 +3,7 @@
   "packageManager": "yarn@3.6.4",
   "source": "src/index.html",
   "scripts": {
-    "start": "parcel",
+    "start": "parcel serve --lazy",
     "build": "parcel build"
   },
   "devDependencies": {
