@@ -84,8 +84,6 @@ class MyScene extends Phaser.Scene {
     } else {
       // If no keys are pressed, the player keeps still
       _player!.setVelocityX(0);
-      // Only show the idle animation if the player is footed
-      // If this is not included, the player would look idle while jumping
     }
 
     // Player can jump while walking any direction by pressing the space bar
