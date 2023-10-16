@@ -15,13 +15,19 @@ class MyScene extends Phaser.Scene {
     );
   }
   create() {
-    console.log("creating player sprite!");
-    _player = this.physics.add.sprite(50, 300, "player");
-    _player.setBounce(0.1);
-    _player.setCollideWorldBounds(true);
-    _player.setGravityY(GRAVITY_Y);
+    console.log("creating player!");
+    const player = this.physics.add.sprite(50, 300, "player");
+    player.setBounce(0.1);
+    player.setCollideWorldBounds(true);
+    player.setGravityY(GRAVITY_Y);
+    if (_player) {
+      // Copy the old position
+      player.setPosition(_player.x, _player.y);
+    }
+    _player = player;
 
     this.#cursors = this.input.keyboard!.createCursorKeys();
+
   }
   update() {
     // Control the player with left or right keys
@@ -32,6 +38,8 @@ class MyScene extends Phaser.Scene {
     } else {
       // If no keys are pressed, the player keeps still
       _player!.setVelocityX(0);
+      // Only show the idle animation if the player is footed
+      // If this is not included, the player would look idle while jumping
     }
 
     // Player can jump while walking any direction by pressing the space bar
@@ -52,7 +60,7 @@ class MyScene extends Phaser.Scene {
 }
 
 const game = new Phaser.Game({
-  parent: "game", // container element ID
+  parent: "game", // element ID
   type: Phaser.AUTO, // try WebGL, fallback to Canvas
   width: 800,
   height: 640,
@@ -69,4 +77,25 @@ const game = new Phaser.Game({
   },
 });
 
+let _reloadCount = 0;
+
+interface HMRData {
+  player: PhaserTypes.Physics.Arcade.SpriteWithDynamicBody;
+  reloadCount: number;
+}
+
+if (module.hot) {
+  module.hot.dispose((data: HMRData) => {
+    console.log("dispose module (reload #" + _reloadCount + ")");
+    data.player = _player;
+    data.reloadCount = _reloadCount;
+    // NOTE: it's critical to destroy the old Phaser.Game instance for HMR to work correctly.
+    game.destroy(true);
+  });
+  module.hot.accept(() => {
+    console.log("reload module (reload #" + _reloadCount + ")");
+    _player = module.hot!.data.player;
+    _reloadCount = module.hot!.data.reloadCount + 1;
+  });
+}
 console.log("finished evaluating module scope");
