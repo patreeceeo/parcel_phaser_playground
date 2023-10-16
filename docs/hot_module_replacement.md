@@ -30,7 +30,7 @@ Point Parcel's development server to our `index.html`.
   }
 }
 ```
-<aside>Aside: I would recommend using the `--lazy` flag with parcel's `serve` command to ensure snappy rebuilds.</aside>
+Aside: I would recommend using the `--lazy` flag with parcel's `serve` command to ensure snappy rebuilds.
 
 ### index.html
 
@@ -124,7 +124,7 @@ const game = new Phaser.Game({
 console.log("finished evaluating module scope");
 ```
 
-<aside>Note: this code is a simplified, TypeScript version of [StackAbuse's excellent Phaser Platformer example](https://stackabuse.com/phaser-3-and-tiled-building-a-platformer/).</aside>
+Note: this code is a simplified, TypeScript version of [StackAbuse's excellent Phaser Platformer example](https://stackabuse.com/phaser-3-and-tiled-building-a-platformer/).
 
 ### HMR Opt-in
 
@@ -149,7 +149,7 @@ if (module.hot) {
 }
  ```
 
-<aside>You may need to install the `@types/webpack-env` package if the TypeScript compiler doesn't know about `module.hot`.</aside>
+Aside: You may need to install the `@types/webpack-env` package if the TypeScript compiler doesn't know about `module.hot`.
 
 Now, whenever `game.ts` has been updated, Parcel will call the `dispose` callback, which saves the current player sprite in `module.data` and [destroys the current Phaser game instance](#destroying-the-game-instance). Then, Parcel does the hot module Replacement itself, updating the code for `game.ts` in the browser's module cache, causing the module-level scope to be re-evaluated. Then it calls the `accept` callback, which assigns the player sprite from the previous module to the module-level declaration. Then, the module-level re-evaluation triggers another call to our scene's `create` method.
 
