@@ -4,6 +4,24 @@ import type { Types as PhaserTypes } from "phaser";
 const GRAVITY_Y = 400;
 
 let _player: PhaserTypes.Physics.Arcade.SpriteWithDynamicBody;
+let _game: Phaser.Game;
+
+interface HMRData {
+  player: PhaserTypes.Physics.Arcade.SpriteWithDynamicBody;
+}
+
+if (module.hot) {
+  module.hot.dispose((data: HMRData) => {
+    console.log("dispose module");
+    data.player = _player;
+    // NOTE: it's critical to destroy the old Phaser.Game instance for HMR to work correctly.
+    _game.destroy(true);
+  });
+  module.hot.accept(() => {
+    console.log("accept module");
+    _player = module.hot!.data.player;
+  });
+}
 
 class MyScene extends Phaser.Scene {
   #cursors: PhaserTypes.Input.Keyboard.CursorKeys | undefined;
@@ -20,7 +38,6 @@ class MyScene extends Phaser.Scene {
     _player = player;
 
     this.#cursors = this.input.keyboard!.createCursorKeys();
-
   }
   update() {
     // Control the player with left or right keys
@@ -52,7 +69,7 @@ class MyScene extends Phaser.Scene {
   }
 }
 
-const game = new Phaser.Game({
+_game = new Phaser.Game({
   parent: "game", // element ID
   type: Phaser.AUTO, // try WebGL, fallback to Canvas
   width: 800,
@@ -70,20 +87,4 @@ const game = new Phaser.Game({
   },
 });
 
-interface HMRData {
-  player: PhaserTypes.Physics.Arcade.SpriteWithDynamicBody;
-}
-
-if (module.hot) {
-  module.hot.dispose((data: HMRData) => {
-    console.log("dispose module");
-    data.player = _player;
-    // NOTE: it's critical to destroy the old Phaser.Game instance for HMR to work correctly.
-    game.destroy(true);
-  });
-  module.hot.accept(() => {
-    console.log("accept module");
-    _player = module.hot!.data.player;
-  });
-}
 console.log("finished evaluating module scope");
