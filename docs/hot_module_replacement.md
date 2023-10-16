@@ -128,7 +128,7 @@ console.log("finished evaluating module scope");
 
 ### HMR Opt-in
 
-To use Parcel's HMR support, we must opt in to it using the `module.hot` API. Add the follow to the bottom of `game.ts`:
+To use Parcel's HMR support, we must opt in to it using the `module.hot` API. Add the follow to the bottom of `game.ts`, just above the `console.log`:
 
 ```typescript
 interface HMRData {
@@ -147,7 +147,7 @@ if (module.hot) {
     _player = module.hot!.data.player;
   });
 }
- console.log("finished evaluating module scope");
+console.log("finished evaluating module scope");
  ```
 
 <aside>You may need to install the `@types/webpack-env` package if the TypeScript compiler doesn't know about `module.hot`.</aside>
