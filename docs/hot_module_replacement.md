@@ -147,7 +147,6 @@ if (module.hot) {
     _player = module.hot!.data.player;
   });
 }
-console.log("finished evaluating module scope");
  ```
 
 <aside>You may need to install the `@types/webpack-env` package if the TypeScript compiler doesn't know about `module.hot`.</aside>
