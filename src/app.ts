@@ -1,36 +1,9 @@
 import * as Phaser from "phaser";
 import type { Types as PhaserTypes } from "phaser";
 
-let _reloadCount = 0;
-
-interface HMRData {
-  player: PhaserTypes.Physics.Arcade.SpriteWithDynamicBody;
-  reloadCount: number;
-}
-
-if (module.hot) {
-  module.hot.dispose((data: HMRData) => {
-    console.log("dispose module (reload #" + _reloadCount + ")");
-    data.player = _player;
-    data.reloadCount = _reloadCount;
-    // NOTE: it's critical to destroy the old Phaser.Game instance for HMR to work correctly.
-    game.destroy(true);
-  });
-  module.hot.accept(() => {
-    console.log("reload module (reload #" + _reloadCount + ")");
-    _player = module.hot.data.player;
-    _reloadCount = module.hot.data.reloadCount + 1;
-  });
-}
-
 const GRAVITY_Y = 400;
 
 let _player: PhaserTypes.Physics.Arcade.SpriteWithDynamicBody;
-
-function setGravity(x: number, y: number) {
-  _player.setGravity(x, y);
-  console.log("set gravity to", GRAVITY_Y, "for", _player);
-}
 
 class MyScene extends Phaser.Scene {
   #spikes: Phaser.Physics.Arcade.Group | undefined;
@@ -62,14 +35,13 @@ class MyScene extends Phaser.Scene {
     const player = this.physics.add.sprite(50, 300, "player");
     player.setBounce(0.1);
     player.setCollideWorldBounds(true);
+    player.setGravityY(GRAVITY_Y);
     this.physics.add.collider(player, platforms);
     if (_player) {
       // Copy the old position
       player.setPosition(_player.x, _player.y);
     }
     _player = player;
-
-    setGravity(0, GRAVITY_Y);
 
     this.anims.create({
       key: "idle",
@@ -197,4 +169,25 @@ const game = new Phaser.Game({
   },
 });
 
+let _reloadCount = 0;
+
+interface HMRData {
+  player: PhaserTypes.Physics.Arcade.SpriteWithDynamicBody;
+  reloadCount: number;
+}
+
+if (module.hot) {
+  module.hot.dispose((data: HMRData) => {
+    console.log("dispose module (reload #" + _reloadCount + ")");
+    data.player = _player;
+    data.reloadCount = _reloadCount;
+    // NOTE: it's critical to destroy the old Phaser.Game instance for HMR to work correctly.
+    game.destroy(true);
+  });
+  module.hot.accept(() => {
+    console.log("reload module (reload #" + _reloadCount + ")");
+    _player = module.hot.data.player;
+    _reloadCount = module.hot.data.reloadCount + 1;
+  });
+}
 console.log("finished evaluating module scope");
