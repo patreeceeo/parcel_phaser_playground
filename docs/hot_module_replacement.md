@@ -152,11 +152,13 @@ if (module.hot) {
 
  This order of operations ensures that the `accept` callback is called before Phaser calls the `create` method of the scene, a possible race-condition.
 
-Aside: You may need to install the `@types/webpack-env` package if the TypeScript compiler doesn't know about `module.hot`.
-
 Now, whenever `game.ts` has been updated, Parcel will call the `dispose` callback, which saves the current player sprite in `module.hot.data` and [destroys the current Phaser game instance](#destroying-the-game-instance). Then, Parcel does the hot module replacement itself, updating the code for `game.ts` in the browser's module cache, causing the module-level scope to be re-evaluated. Then it calls the `accept` callback, which assigns the player sprite from the previous module to the module-level declaration. Then, the module-level re-evaluation triggers another call to our scene's `create` method.
 
 So, in order for this to work, we also need to change some in the scene's `create` method so that we handle the two possible cases: `_player` is undefined, implying HMR has not occurred yet or when it is defined, implying that is has. In either case, we must create a new player sprite because we've destroyed the old game instance and created a new one, and the new instance is not aware of our old player sprite. Finally, we copy the position from the old sprite to the new one, and overwrite the old sprite.
+
+PS: You may need to install the `@types/webpack-env` package if the TypeScript compiler doesn't know about `module.hot`.
+
+PPS: You may wonder if there's a possible race condition here between the `accept` callback and when Phaser calls the `create` method. As far as I can tell, the `accept` callback is called synchronously with the module reload, while the `create` method is asynchronous with the module reload, in which case, the `accept` callback will always be called first.
 
 ```typescript.diff
    create() {
