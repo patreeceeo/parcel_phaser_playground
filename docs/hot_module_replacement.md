@@ -156,7 +156,7 @@ Now, whenever `game.ts` has been updated, Parcel will call the `dispose` callbac
 
 So, in order for this to work, we also need to change some in the scene's `create` method so that we handle the two possible cases: `_player` is undefined, implying HMR has not occurred yet or when it is defined, implying that is has. In either case, we must create a new player sprite because we've destroyed the old game instance and created a new one, and the new instance is not aware of our old player sprite. Finally, we copy the position from the old sprite to the new one, and overwrite the old sprite.
 
-PS: You may need to install the `@types/webpack-env` package if the TypeScript compiler doesn't know about `module.hot`.
+PS: You may need to install the `@types/parcel-env` package if the TypeScript compiler doesn't know about `module.hot`. (Actually these types are incorrect) https://github.com/parcel-bundler/parcel/discussions/9321
 
 PPS: You may wonder if there's a possible race condition here between the `accept` callback and when Phaser calls the `create` method. As far as I can tell, the `accept` callback is called synchronously with the module reload, while the `create` method is asynchronous with the module reload, in which case, the `accept` callback will always be called first.
 
