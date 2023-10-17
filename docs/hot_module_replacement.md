@@ -131,7 +131,7 @@ Note: this code is a simplified, TypeScript version of [StackAbuse's excellent P
 
 ### HMR Opt-in
 
-To use Parcel's HMR support, we must opt in to it using the `module.hot` API. Whenever `game.ts` has been updated, Parcel will call the `dispose` callback, which will save the current player sprite in `module.hot.data` and [destroy the current Phaser game instance](#destroying-the-game-instance). Then, Parcel does the hot module replacement itself, updating the code for `game.ts` in the browser's module cache, causing the module-level scope to be re-evaluated. Then it calls the `accept` callback, which assigns the player sprite from the previous module to the module-level declaration. Then, the module-level re-evaluation triggers another call to our scene's `create` method.
+To use Parcel's HMR support, we must opt in to it using the `module.hot` API. Whenever `game.ts` has been updated, Parcel will call the `dispose` callback, which will save the current player sprite in `module.data` and [destroy the current Phaser game instance](#destroying-the-game-instance). Then, Parcel does the hot module replacement itself, updating the code for `game.ts` in the browser's module cache, causing the module-level scope to be re-evaluated. Then it calls the `accept` callback, which assigns the player sprite from the previous module to the module-level declaration. Then, the module-level re-evaluation triggers another call to our scene's `create` method.
 
 We have to be careful of the order of operations to avoid a race condition between the `accept` callback and when Phaser calls the `create` method of the scene, since both happen asynchronously. This is the reason for using an asynchronously IIFE.
 
