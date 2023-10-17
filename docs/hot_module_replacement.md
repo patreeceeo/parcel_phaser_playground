@@ -52,7 +52,7 @@ Load our game's TypeScript and create a DOM container for Phaser.
 
 ### game.ts
 
-The code for a simple platformer style game in Phaser. We can move our character left and right with the arrow keys, and jump with SPACE. We have some module-level declarations for the gravity constant and the player's sprite. It's nice to declare constants at the module level, near the top, so they're easy to adjust later. The fact that the sprite is declared at the module level will be important momentarily.
+The code for a simple platformer style game in Phaser. We can move our character left and right with the arrow keys, and jump with SPACE. We have some module-level declarations. It's nice to declare constants at the module level, near the top, so they're easy to adjust later. The fact that the sprite and game instances are declared at the module level will be important momentarily.
 
 ```typescript
 import * as Phaser from "phaser";
@@ -61,19 +61,18 @@ import type { Types as PhaserTypes } from "phaser";
 const GRAVITY_Y = 400;
 
 let _player: PhaserTypes.Physics.Arcade.SpriteWithDynamicBody;
+let _game: Phaser.Game;
 
 class MyScene extends Phaser.Scene {
   #cursors: PhaserTypes.Input.Keyboard.CursorKeys | undefined;
   create() {
     console.log("creating player!");
-    // Note: for simplicity there is no "player" image, so Phaser will just display a little box
     _player = this.physics.add.sprite(50, 300, "player");
     _player.setBounce(0.1);
     _player.setCollideWorldBounds(true);
     _player.setGravityY(GRAVITY_Y);
 
     this.#cursors = this.input.keyboard!.createCursorKeys();
-
   }
   update() {
     // Control the player with left or right keys
@@ -84,6 +83,8 @@ class MyScene extends Phaser.Scene {
     } else {
       // If no keys are pressed, the player keeps still
       _player!.setVelocityX(0);
+      // Only show the idle animation if the player is footed
+      // If this is not included, the player would look idle while jumping
     }
 
     // Player can jump while walking any direction by pressing the space bar
@@ -103,7 +104,7 @@ class MyScene extends Phaser.Scene {
   }
 }
 
-const game = new Phaser.Game({
+_game = new Phaser.Game({
   parent: "game", // element ID
   type: Phaser.AUTO, // try WebGL, fallback to Canvas
   width: 800,
@@ -128,7 +129,7 @@ Note: this code is a simplified, TypeScript version of [StackAbuse's excellent P
 
 ### HMR Opt-in
 
-To use Parcel's HMR support, we must opt in to it using the `module.hot` API. Add the follow to the bottom of `game.ts`, just above the `console.log`:
+To use Parcel's HMR support, we must opt in to it using the `module.hot` API. Add the follow to `game.ts`, just below the `_game` declaration, but before the Game instance is actually created:
 
 ```typescript
 interface HMRData {
@@ -148,6 +149,8 @@ if (module.hot) {
   });
 }
  ```
+
+ This order of operations ensures that the `accept` callback is called before Phaser calls the `create` method of the scene, a possible race-condition.
 
 Aside: You may need to install the `@types/webpack-env` package if the TypeScript compiler doesn't know about `module.hot`.
 
