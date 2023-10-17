@@ -3,7 +3,64 @@ import type { Types as PhaserTypes } from "phaser";
 
 const GRAVITY_Y = 400;
 
+let _game: Phaser.Game | undefined;
+
 let _player: PhaserTypes.Physics.Arcade.SpriteWithDynamicBody;
+
+let _reloadCount = 0;
+
+interface HMRData {
+  game: Phaser.Game;
+  player: PhaserTypes.Physics.Arcade.SpriteWithDynamicBody;
+  reloadCount: number;
+}
+
+if (module.hot) {
+
+  module.hot.dispose((data: HMRData) => {
+    console.log("dispose module (reload #" + _reloadCount + ")");
+    data.game = _game!;
+    data.player = _player;
+    data.reloadCount = _reloadCount;
+  });
+  module.hot.accept(() => {
+    _reloadCount = module.hot!.data.reloadCount
+    console.log("accept module (reload #" + _reloadCount + ")", GRAVITY_Y);
+    _reloadCount++;
+    _game = module.hot!.data.game;
+    _player = module.hot!.data.player;
+    _player.setGravityY(GRAVITY_Y);
+  });
+
+  setTimeout(() => {
+    if(!_game) {
+      _game = createGame();
+    }
+  }, 0)
+} else {
+  _game = createGame();
+}
+
+function createGame() {
+  return new Phaser.Game({
+    parent: "game", // element ID
+    type: Phaser.AUTO, // try WebGL, fallback to Canvas
+    width: 800,
+    height: 640,
+    scale: {
+      mode: Phaser.Scale.RESIZE,
+      autoCenter: Phaser.Scale.CENTER_BOTH,
+    },
+    scene: MyScene,
+    physics: {
+      default: "arcade",
+      arcade: {
+        gravity: { x: 0, y: 0 },
+      },
+    },
+  });
+}
+
 
 class MyScene extends Phaser.Scene {
   #spikes: Phaser.Physics.Arcade.Group | undefined;
@@ -32,16 +89,11 @@ class MyScene extends Phaser.Scene {
     platforms.setCollisionByExclusion([-1], true);
 
     console.log("creating player!");
-    const player = this.physics.add.sprite(50, 300, "player");
-    player.setBounce(0.1);
-    player.setCollideWorldBounds(true);
-    player.setGravityY(GRAVITY_Y);
-    this.physics.add.collider(player, platforms);
-    if (_player) {
-      // Copy the old position
-      player.setPosition(_player.x, _player.y);
-    }
-    _player = player;
+    _player = this.physics.add.sprite(50, 300, "player");
+    _player.setBounce(0.1);
+    _player.setCollideWorldBounds(true);
+    _player.setGravityY(GRAVITY_Y);
+    this.physics.add.collider(_player, platforms);
 
     this.anims.create({
       key: "idle",
@@ -90,16 +142,16 @@ class MyScene extends Phaser.Scene {
     });
 
     this.physics.add.collider(
-      player,
+      _player,
       this.#spikes!,
       () => {
-        player!.setVelocity(0, 0);
-        player!.setX(50);
-        player!.setY(300);
-        player!.play("idle", true);
-        player!.setAlpha(0);
+        _player!.setVelocity(0, 0);
+        _player!.setX(50);
+        _player!.setY(300);
+        _player!.play("idle", true);
+        _player!.setAlpha(0);
         let tw = this.tweens.add({
-          targets: player,
+          targets: _player,
           alpha: 1,
           duration: 100,
           ease: "Linear",
@@ -151,43 +203,5 @@ class MyScene extends Phaser.Scene {
   }
 }
 
-const game = new Phaser.Game({
-  parent: "game", // element ID
-  type: Phaser.AUTO, // try WebGL, fallback to Canvas
-  width: 800,
-  height: 640,
-  scale: {
-    mode: Phaser.Scale.RESIZE,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
-  },
-  scene: MyScene,
-  physics: {
-    default: "arcade",
-    arcade: {
-      gravity: { x: 0, y: 0 },
-    },
-  },
-});
 
-let _reloadCount = 0;
-
-interface HMRData {
-  player: PhaserTypes.Physics.Arcade.SpriteWithDynamicBody;
-  reloadCount: number;
-}
-
-if (module.hot) {
-  module.hot.dispose((data: HMRData) => {
-    console.log("dispose module (reload #" + _reloadCount + ")");
-    data.player = _player;
-    data.reloadCount = _reloadCount;
-    // NOTE: it's critical to destroy the old Phaser.Game instance for HMR to work correctly.
-    game.destroy(true);
-  });
-  module.hot.accept(() => {
-    console.log("reload module (reload #" + _reloadCount + ")");
-    _player = module.hot.data.player;
-    _reloadCount = module.hot.data.reloadCount + 1;
-  });
-}
 console.log("finished evaluating module scope");
