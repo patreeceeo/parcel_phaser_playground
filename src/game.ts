@@ -15,8 +15,8 @@ interface HMRData {
   reloadCount: number;
 }
 
-if (module.hot) {
 
+if (module.hot) {
   module.hot.dispose((data: HMRData) => {
     console.log("dispose module (reload #" + _reloadCount + ")");
     data.game = _game!;
@@ -33,6 +33,7 @@ if (module.hot) {
   });
 
   setTimeout(() => {
+    console.log("next tick after evaluating module");
     if(!_game) {
       _game = createGame();
     }
